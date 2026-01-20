@@ -1,0 +1,85 @@
+# GitHub Actions workflow to automatically update the Homebrew formula
+# when a new version is published to npm.
+#
+# This workflow should be placed in the homebrew-tap repository,
+# NOT in the main automatosx repository.
+#
+# Setup:
+# 1. Create a GitHub Personal Access Token with 'repo' scope
+# 2. Add it as a repository secret named HOMEBREW_TAP_TOKEN
+# 3. Copy this file to defai-digital/homebrew-tap/.github/workflows/
+
+name: Update Homebrew Formula
+
+on:
+  # Manual trigger with version input
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update to (e.g., 13.4.9)'
+        required: true
+        type: string
+
+  # Webhook from npm publish (requires npm automation token)
+  repository_dispatch:
+    types: [npm-publish]
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tap repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          elif [ -n "${{ github.event.client_payload.version }}" ]; then
+            VERSION="${{ github.event.client_payload.version }}"
+          else
+            # Fetch latest version from npm
+            VERSION=$(curl -s https://registry.npmjs.org/@defai.digital/cli/latest | jq -r '.version')
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Updating to version: $VERSION"
+
+      - name: Calculate SHA256
+        id: sha256
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          SHA256=$(curl -sL "https://registry.npmjs.org/@defai.digital/cli/-/cli-${VERSION}.tgz" | shasum -a 256 | cut -d ' ' -f 1)
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+          echo "SHA256: $SHA256"
+
+      - name: Update formula
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          SHA256="${{ steps.sha256.outputs.sha256 }}"
+
+          # Update version in URL
+          sed -i "s|cli-[0-9]*\.[0-9]*\.[0-9]*\.tgz|cli-${VERSION}.tgz|g" Formula/ax.rb
+
+          # Update SHA256
+          sed -i "s|sha256 \"[a-f0-9]*\"|sha256 \"${SHA256}\"|g" Formula/ax.rb
+
+          echo "Updated Formula/ax.rb:"
+          grep -E "(url|sha256)" Formula/ax.rb
+
+      - name: Commit and push
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add Formula/ax.rb
+          git commit -m "Update ax formula to v${VERSION}" || echo "No changes to commit"
+          git push
+
+      - name: Create release tag
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          git tag "v${VERSION}" || echo "Tag already exists"
+          git push --tags || echo "Tags already pushed"
