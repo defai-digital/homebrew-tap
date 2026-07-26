@@ -7,17 +7,20 @@ cask "ax-code-desktop" do
   desc "AI coding assistant desktop app powered by AX Code"
   homepage "https://github.com/defai-digital/ax-code"
 
+  depends_on arch: :arm64
+  depends_on :macos
+
   app "AX Code.app"
 
   postflight do
     system_command "/usr/bin/xattr",
-      args: ["-cr", "#{appdir}/AX Code.app"]
+                   args: ["-cr", "#{appdir}/AX Code.app"]
   end
 
   zap trash: [
     "~/Library/Application Support/AX Code Desktop",
-    "~/Library/Preferences/ai.defai.ax-code-app.plist",
     "~/Library/Caches/AX Code Desktop",
     "~/Library/Logs/AX Code Desktop",
+    "~/Library/Preferences/ai.defai.ax-code-app.plist",
   ]
 end
