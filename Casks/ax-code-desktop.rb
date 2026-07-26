@@ -12,11 +12,6 @@ cask "ax-code-desktop" do
 
   app "AX Code.app"
 
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-cr", "#{appdir}/AX Code.app"]
-  end
-
   zap trash: [
     "~/Library/Application Support/AX Code Desktop",
     "~/Library/Caches/AX Code Desktop",
