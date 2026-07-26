@@ -3,15 +3,8 @@ class AxEngine < Formula
   homepage "https://github.com/defai-digital/ax-engine"
   version "6.11.1"
   license "Apache-2.0"
-
-  on_macos do
-    if Hardware::CPU.arm?
-      url "https://github.com/defai-digital/ax-engine/releases/download/v6.11.1/ax-engine-v6.11.1-macos-arm64.tar.gz"
-      sha256 "57ffc6a7eb2d461cef8bc85551f9464b61b4093f493ed3af0c3df59328a24235"
-    else
-      odie "ax-engine requires Apple Silicon (arm64)."
-    end
-  end
+  url "https://github.com/defai-digital/ax-engine/releases/download/v6.11.1/ax-engine-v6.11.1-macos-arm64.tar.gz"
+  sha256 "57ffc6a7eb2d461cef8bc85551f9464b61b4093f493ed3af0c3df59328a24235"
 
   # Tap-local mlx/mlx-c, not homebrew-core's: homebrew-core's mlx formula
   # derives its build's MACOSX_DEPLOYMENT_TARGET from
@@ -25,8 +18,8 @@ class AxEngine < Formula
   # always resolves the tap's dylib, never a core bottle or a pip wheel path.
   depends_on "defai-digital/tap/mlx"
   depends_on "defai-digital/tap/mlx-c"
-  depends_on :macos
   depends_on arch: :arm64
+  depends_on :macos
 
   # Mach-O names that load libmlx at runtime. The GitHub release archive is
   # built against pip/venv MLX (correct for source and wheel perf parity) and
@@ -36,7 +29,15 @@ class AxEngine < Formula
   MLX_LINKED_BINS = %w[ax-engine-server ax-engine-bench].freeze
 
   def install
-    bin.install "ax-engine", "ax-engine-server", "ax-engine-bench", "ax-engine-download-model.py", "ax-engine-prepare-mtp-sidecar.py", "ax-engine-prepare-gemma4-assistant-mtp.py", "ax-engine-prepare-glm-mtp-sidecar.py", "ax-engine-prepare-qwen36-mtp-sidecar.py", "ax-engine-check-mtp-sidecar-provenance.py"
+    bin.install "ax-engine",
+                "ax-engine-server",
+                "ax-engine-bench",
+                "ax-engine-download-model.py",
+                "ax-engine-prepare-mtp-sidecar.py",
+                "ax-engine-prepare-gemma4-assistant-mtp.py",
+                "ax-engine-prepare-glm-mtp-sidecar.py",
+                "ax-engine-prepare-qwen36-mtp-sidecar.py",
+                "ax-engine-check-mtp-sidecar-provenance.py"
 
     # Clear quarantine while files are still writable. Relinking below
     # may drop write bits after codesign.
@@ -100,11 +101,9 @@ class AxEngine < Formula
       # Drop builder-host LC_RPATH entries (pip site-packages, venv paths, etc.).
       # Absolute install names do not need them; leaving them confuses diagnosis.
       MachO.open(binary.to_s).rpaths.uniq.each do |rpath|
-        begin
-          MachO::Tools.delete_rpath(binary.to_s, rpath)
-        rescue MachO::RpathUnknownError, MachO::MachOError
-          # Concurrent delete or already removed — safe to ignore.
-        end
+        MachO::Tools.delete_rpath(binary.to_s, rpath)
+      rescue MachO::RpathUnknownError, MachO::MachOError
+        # Concurrent delete or already removed — safe to ignore.
       end
 
       # install_name_tool / ruby-macho invalidate the Developer ID signature.

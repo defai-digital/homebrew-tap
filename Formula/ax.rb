@@ -24,21 +24,20 @@ class Ax < Formula
   depends_on "node@20"
 
   def install
-    # Set npm prefix to install into the Cellar
-    system "npm", "install", "--global", "--prefix", prefix, "@defai.digital/cli@#{version}"
+    system "npm", "install", *std_npm_args
 
     # Create wrapper scripts that set NODE_PATH correctly
     # This ensures the CLI can find its dependencies
     (bin/"ax").write <<~EOS
       #!/bin/bash
-      export NODE_PATH="#{lib}/node_modules"
-      exec "#{Formula["node@20"].opt_bin}/node" "#{lib}/node_modules/@defai.digital/cli/dist/bin.js" "$@"
+      export NODE_PATH="#{libexec}/lib/node_modules"
+      exec "#{formula_opt_bin("node@20")}/node" "#{libexec}/lib/node_modules/@defai.digital/cli/dist/bin.js" "$@"
     EOS
 
     (bin/"automatosx").write <<~EOS
       #!/bin/bash
-      export NODE_PATH="#{lib}/node_modules"
-      exec "#{Formula["node@20"].opt_bin}/node" "#{lib}/node_modules/@defai.digital/cli/dist/bin.js" "$@"
+      export NODE_PATH="#{libexec}/lib/node_modules"
+      exec "#{formula_opt_bin("node@20")}/node" "#{libexec}/lib/node_modules/@defai.digital/cli/dist/bin.js" "$@"
     EOS
   end
 

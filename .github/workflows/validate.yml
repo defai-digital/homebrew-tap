@@ -35,11 +35,11 @@ jobs:
           HOMEBREW_NO_AUTO_UPDATE: "1"
         run: |
           set -euo pipefail
-          brew audit --strict defai-digital/tap/ax
-          brew audit --strict defai-digital/tap/ax-code
-          brew audit --strict defai-digital/tap/ax-engine
-          brew audit --strict defai-digital/tap/mlx
-          brew audit --strict defai-digital/tap/mlx-c
+          brew audit --strict --formula defai-digital/tap/ax
+          brew audit --strict --formula defai-digital/tap/ax-code
+          brew audit --strict --formula defai-digital/tap/ax-engine
+          brew audit --strict --formula defai-digital/tap/mlx
+          brew audit --strict --formula defai-digital/tap/mlx-c
           brew audit --cask --strict defai-digital/tap/ax-code-desktop
           brew audit --cask --strict defai-digital/tap/ax-studio
           brew audit --cask --strict defai-digital/tap/ax-bi

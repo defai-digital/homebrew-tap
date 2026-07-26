@@ -80,7 +80,7 @@ Before publishing a change, run:
 
 ```bash
 ruby -c Formula/<formula>.rb
-brew audit --strict defai-digital/tap/<formula>
+brew audit --strict --formula defai-digital/tap/<formula>
 brew audit --cask --strict defai-digital/tap/<cask>
 ```
 
