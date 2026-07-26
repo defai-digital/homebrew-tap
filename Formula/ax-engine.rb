@@ -2,8 +2,8 @@ class AxEngine < Formula
   desc "Mac-first LLM inference engine targeting Apple M4+ Silicon"
   homepage "https://github.com/defai-digital/ax-engine"
   url "https://github.com/defai-digital/ax-engine/releases/download/v6.11.1/ax-engine-v6.11.1-macos-arm64.tar.gz"
-  sha256 "57ffc6a7eb2d461cef8bc85551f9464b61b4093f493ed3af0c3df59328a24235"
   version "6.11.1"
+  sha256 "57ffc6a7eb2d461cef8bc85551f9464b61b4093f493ed3af0c3df59328a24235"
   license "Apache-2.0"
 
   # Tap-local mlx/mlx-c, not homebrew-core's: homebrew-core's mlx formula
@@ -17,9 +17,9 @@ class AxEngine < Formula
   # Explicit mlx dep (not only via mlx-c) so install-time linkage rewrite
   # always resolves the tap's dylib, never a core bottle or a pip wheel path.
   depends_on arch: :arm64
-  depends_on :macos
   depends_on "defai-digital/tap/mlx"
   depends_on "defai-digital/tap/mlx-c"
+  depends_on :macos
 
   # Mach-O names that load libmlx at runtime. The GitHub release archive is
   # built against pip/venv MLX (correct for source and wheel perf parity) and
