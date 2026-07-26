@@ -1,0 +1,45 @@
+name: Validate Homebrew Tap
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate Ruby syntax
+        run: |
+          set -euo pipefail
+          while IFS= read -r recipe; do
+            ruby -c "$recipe"
+          done < <(find Formula Casks -type f -name '*.rb' -print | sort)
+
+  audit:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Tap working tree
+        run: |
+          set -euo pipefail
+          brew untap defai-digital/tap >/dev/null 2>&1 || true
+          brew tap defai-digital/tap "$GITHUB_WORKSPACE"
+          brew trust --tap defai-digital/tap
+      - name: Audit public packages
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: |
+          set -euo pipefail
+          brew audit --strict defai-digital/tap/ax
+          brew audit --strict defai-digital/tap/ax-code
+          brew audit --strict defai-digital/tap/ax-engine
+          brew audit --strict defai-digital/tap/mlx
+          brew audit --strict defai-digital/tap/mlx-c
+          brew audit --cask --strict defai-digital/tap/ax-code-desktop
+          brew audit --cask --strict defai-digital/tap/ax-studio
+          brew audit --cask --strict defai-digital/tap/ax-bi

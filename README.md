@@ -1,46 +1,91 @@
-# Homebrew Tap for AutomatosX
+# DefAI Digital Homebrew Tap
 
-This is the official Homebrew tap for [AutomatosX](https://github.com/defai-digital/automatosx), a contract-first AI orchestration platform with multi-provider routing.
+Official Homebrew formulae and casks for public software maintained by
+[DefAI Digital](https://github.com/defai-digital).
 
-## Installation
+## Install
+
+Use a fully qualified package name. Homebrew adds this tap automatically:
 
 ```bash
-# Add the tap
-brew tap defai-digital/tap
-
-# Install AutomatosX CLI
-brew install ax
-
-# Or in one command
+# AutomatosX CLI
 brew install defai-digital/tap/ax
+
+# AX Code CLI and Desktop
+brew install defai-digital/tap/ax-code
+brew install --cask defai-digital/tap/ax-code-desktop
+
+# AX Engine
+brew install defai-digital/tap/ax-engine
+
+# AX Studio
+brew install --cask defai-digital/tap/ax-studio
+
+# AX BI Desktop
+brew install --cask defai-digital/tap/ax-bi
 ```
 
-## Usage
+Alternatively, add the tap once and then use short package names:
 
 ```bash
-ax setup        # One-time global setup
-ax init         # Initialize in current project
-ax doctor       # Check provider health
-ax --help       # See all commands
+brew tap defai-digital/tap
+brew install ax-code
+brew install --cask ax-studio
 ```
 
-## Requirements
+## Packages
 
-- macOS with Homebrew
-- Node.js 20+ (installed automatically as dependency)
+| Package | Type | Project |
+| --- | --- | --- |
+| `ax` | Formula | [AutomatosX](https://github.com/defai-digital/automatosx) |
+| `ax-code` | Formula | [AX Code](https://github.com/defai-digital/ax-code) |
+| `ax-code-desktop` | Cask | [AX Code Desktop](https://github.com/defai-digital/ax-code/tree/main/desktop) |
+| `ax-engine` | Formula | [AX Engine](https://github.com/defai-digital/ax-engine) |
+| `ax-studio` | Cask | [AX Studio](https://github.com/defai-digital/ax-studio) |
+| `ax-bi` | Cask | [AX BI](https://github.com/defai-digital/ax-bi) |
 
-## Updating
+`mlx` and `mlx-c` are tap-local AX Engine dependencies. They intentionally
+build from source with the deployment-target configuration required by
+AX Engine and should normally be installed through `ax-engine`.
+
+## Update
 
 ```bash
 brew update
-brew upgrade ax
+brew upgrade ax-code ax-engine
+brew upgrade --cask ax-code-desktop ax-studio ax-bi
 ```
 
-## Documentation
+## Migration from legacy taps
 
-- [AutomatosX GitHub](https://github.com/defai-digital/automatosx)
-- [AutomatosX Documentation](https://github.com/defai-digital/automatosx#readme)
+The former product-specific taps have moved here:
 
-## License
+- `defai-digital/ax-code`
+- `defai-digital/ax-code-desktop`
+- `defai-digital/ax-engine`
+- `defai-digital/ax-studio`
+- `defai-digital/ax-bi`
 
-BUSL-1.1
+Those repositories contain Homebrew migration metadata so existing
+installations move to `defai-digital/tap` during `brew update`. New
+documentation and automation should use only this tap.
+
+## Release maintenance
+
+Each product repository owns its release artifacts and updates only its
+corresponding file in this tap. Formulae and casks are distribution metadata;
+the signed release binaries remain in each product's GitHub Releases.
+
+Before publishing a change, run:
+
+```bash
+ruby -c Formula/<formula>.rb
+brew audit --strict defai-digital/tap/<formula>
+brew audit --cask --strict defai-digital/tap/<cask>
+```
+
+## Package licenses
+
+Each installed package retains the license declared by its source project and
+recipe. The tap repository's own maintenance files are licensed under
+Apache-2.0.
