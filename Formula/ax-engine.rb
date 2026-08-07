@@ -1,13 +1,18 @@
 class AxEngine < Formula
   desc "Mac-first LLM inference engine targeting Apple M4+ Silicon"
   homepage "https://github.com/defai-digital/ax-engine"
-  url "https://github.com/defai-digital/ax-engine/releases/download/v6.13.1/ax-engine-v6.13.1-macos-arm64.tar.gz"
-  version "6.13.1"
-  sha256 "a47126f938eda22b4fa904b5367aa65201722b314f707fca3f7ab58ee7c820c0"
+  url "https://github.com/defai-digital/ax-engine/releases/download/v6.13.2/ax-engine-v6.13.2-macos-arm64.tar.gz"
+  version "6.13.2"
+  sha256 "e61ab02a3209dd43340d75f66ff6be6c9e547e391bacbb78d24ce93114006357"
   license "Apache-2.0"
 
   depends_on arch: :arm64
   depends_on :macos
+
+  # Homebrew otherwise rewrites @rpath dylib IDs to opt-prefix paths during
+  # formula installation and replaces our Developer ID signatures with ad-hoc
+  # signatures. Preserve the signed load commands from the release archive.
+  preserve_rpath
 
   def install
     bin.install "ax-engine",
