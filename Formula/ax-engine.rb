@@ -1,9 +1,9 @@
 class AxEngine < Formula
   desc "Mac-first LLM inference engine targeting Apple M4+ Silicon"
   homepage "https://github.com/defai-digital/ax-engine"
-  url "https://github.com/defai-digital/ax-engine/releases/download/v6.16.1/ax-engine-v6.16.1-macos-arm64.tar.gz"
-  version "6.16.1"
-  sha256 "3924ea51c11261a023d1c5bc5688db4f0f4baa213238cf8145e7ccb0949c6cb7"
+  url "https://github.com/defai-digital/ax-engine/releases/download/v7.0.0/ax-engine-v7.0.0-macos-arm64.tar.gz"
+  version "7.0.0"
+  sha256 "0e1ed81fb3feca8aad1dfc6310d5d6ab1a08fedabf633e30b7de6184c0fe4214"
   license "Apache-2.0"
 
   depends_on arch: :arm64
