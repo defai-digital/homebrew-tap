@@ -11,9 +11,9 @@
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
   homepage "https://github.com/defai-digital/ax-code"
-  url "https://github.com/defai-digital/ax-code/releases/download/v7.5.1/ax-code-darwin-arm64.zip"
-  version "7.5.1"
-  sha256 "1569af0a0a0446a97996a2b15685e7c0bbc115323ef17f7cbc477c997937aca7"
+  url "https://github.com/defai-digital/ax-code/releases/download/v7.6.0/ax-code-darwin-arm64.zip"
+  version "7.6.0"
+  sha256 "b9aa6299b6144003b0bc1180ed75fe2aba2a1af6f723000d54d48775aa16fc78"
   license "Apache-2.0"
 
   depends_on arch: :arm64
@@ -29,7 +29,7 @@ class AxCode < Formula
   # library by absolute path at runtime, so its install id is irrelevant. Gzip it
   # during install so the Mach-O linkage scan skips it, then restore it in
   # post_install, which runs after fix_dynamic_linkage.
-  OPENTUI_DYLIB = "node_modules/@opentui/core-darwin-arm64/libopentui.dylib"
+  OPENTUI_DYLIB = "node_modules/@ax-code/opentui-core/vendor/darwin-arm64/libopentui.dylib"
 
   def install
     libexec.install Dir["*"]
