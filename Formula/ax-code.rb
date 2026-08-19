@@ -11,9 +11,9 @@
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
   homepage "https://github.com/defai-digital/ax-code"
-  url "https://github.com/defai-digital/ax-code/releases/download/v7.7.1/ax-code-darwin-arm64.zip"
-  version "7.7.1"
-  sha256 "a470953cb6d67772241fcfd0a0005e9357180eac360bb81c41c2ca2ede3ef3c6"
+  url "https://github.com/defai-digital/ax-code/releases/download/v7.7.2/ax-code-darwin-arm64.zip"
+  version "7.7.2"
+  sha256 "c2c793b73fd7a0ede7a416cb92736436b931df2fb4cd4d0ca7741b235c56f287"
   license "Apache-2.0"
 
   depends_on arch: :arm64
@@ -56,20 +56,53 @@ class AxCode < Formula
   # ax-code command silently vanishes from PATH. The Desktop cask now ships as
   # "ax-code-desktop", but installs of its short-lived "ax-code" token still
   # trigger the skip; give those users the exact recovery commands.
+  #
+  # A checkout or curl launcher in ~/.local/bin is typically earlier on PATH
+  # than Homebrew, so  succeeds while  keeps
+  # reporting the shadowed binary.
   def caveats
-    return unless (HOMEBREW_PREFIX/"Caskroom/ax-code").directory?
+    messages = []
 
-    <<~EOS
-      The deprecated "ax-code" Desktop cask is installed, so Homebrew skips
-      linking this formula and the ax-code command may be missing from PATH.
+    if (HOMEBREW_PREFIX/"Caskroom/ax-code").directory?
+      messages << <<~EOS
+        The deprecated "ax-code" Desktop cask is installed, so Homebrew skips
+        linking this formula and the ax-code command may be missing from PATH.
 
-      Restore the CLI with:
-        brew link ax-code
-        hash -r
+        Restore the CLI with:
+          brew link ax-code
+          hash -r
 
-      Then move the Desktop app to its renamed cask:
-        brew upgrade --cask ax-code
-    EOS
+        Then move the Desktop app to its renamed cask:
+          brew upgrade --cask ax-code
+      EOS
+    end
+
+    shadowed = [
+      File.expand_path("~/.local/bin/ax-code"),
+      File.expand_path("~/bin/ax-code"),
+    ].select { |candidate| File.exist?(candidate) }.reject do |candidate|
+      File.realpath(candidate).include?("/Cellar/")
+    rescue StandardError
+      false
+    end
+
+    unless shadowed.empty?
+      messages << <<~EOS
+        Another ax-code launcher is installed outside Homebrew:
+          #{shadowed.join("\n          ")}
+
+        If that path is earlier than #{HOMEBREW_PREFIX}/bin in PATH, 
+        will keep reporting the previous version after this upgrade. Check with:
+          which -a ax-code
+          hash -r
+
+        To use this Homebrew install, move the extra launcher aside:
+          mv #{shadowed.first} #{shadowed.first}.bak
+          hash -r
+      EOS
+    end
+
+    messages.join("\n") unless messages.empty?
   end
 
   test do
