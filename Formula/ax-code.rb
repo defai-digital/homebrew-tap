@@ -7,13 +7,13 @@
 # distribution (bin + lib + node_modules), not a single compiled binary, so the
 # whole tree installs into libexec and bin/ax-code is a wrapper that runs the
 # bundle with the Homebrew node (the launcher needs --experimental-ffi for
-# OpenTUI's node:ffi backend and suppresses Node's experimental FFI notice).
+# AX Code TUI's node:ffi backend and suppresses Node's experimental FFI notice).
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
   homepage "https://github.com/defai-digital/ax-code"
-  url "https://github.com/defai-digital/ax-code/releases/download/v7.7.5/ax-code-darwin-arm64.zip"
-  version "7.7.5"
-  sha256 "cd7986b8748b161957752a2c6d534321da038597fecbd65a39185674ab9873eb"
+  url "https://github.com/defai-digital/ax-code/releases/download/v7.7.6/ax-code-darwin-arm64.zip"
+  version "7.7.6"
+  sha256 "e3729342729403abde2e42140dd10bc5a85af211691dc24cbce12295b427c58b"
   license "Apache-2.0"
 
   depends_on arch: :arm64
@@ -21,7 +21,7 @@ class AxCode < Formula
   depends_on "node"
   depends_on "ripgrep"
 
-  # The vendored OpenTUI native library is a prebuilt Mach-O with an @rpath
+  # The AX Code TUI native library is a prebuilt Mach-O with an @rpath
   # install id and zero Mach-O header padding. Homebrew's post-install
   # fix_dynamic_linkage tries to rewrite its dylib id to the long Cellar/opt path
   # and fails ("Updated load commands do not fit in the header"), making the
@@ -29,7 +29,7 @@ class AxCode < Formula
   # library by absolute path at runtime, so its install id is irrelevant. Gzip it
   # during install so the Mach-O linkage scan skips it, then restore it in
   # post_install, which runs after fix_dynamic_linkage.
-  OPENTUI_DYLIB = "node_modules/@ax-code/opentui-core/vendor/darwin-arm64/libopentui.dylib"
+  AX_TUI_DYLIB = "node_modules/@ax-code/tui/vendor/darwin-arm64/libopentui.dylib"
 
   def install
     libexec.install Dir["*"]
@@ -39,12 +39,12 @@ class AxCode < Formula
     SH
     chmod 0755, bin/"ax-code"
 
-    dylib = libexec/OPENTUI_DYLIB
+    dylib = libexec/AX_TUI_DYLIB
     system "gzip", "-n", "--", dylib if dylib.exist?
   end
 
   def post_install
-    gz = libexec/"#{OPENTUI_DYLIB}.gz"
+    gz = libexec/"#{AX_TUI_DYLIB}.gz"
     return unless gz.exist?
 
     chmod 0755, gz.dirname
