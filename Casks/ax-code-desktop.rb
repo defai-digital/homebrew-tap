@@ -1,8 +1,8 @@
 cask "ax-code-desktop" do
-  version "7.7.6"
-  sha256 "a20dd9e26e13b4cbd12063b49f56c793ec6a9f7da1582ebf70a36ea739e07be2"
+  version "7.7.7"
+  sha256 "5888d51371940a62cd0401bf427b809d7ae918c2c439822629c104f1d5b02cac"
 
-  url "https://github.com/defai-digital/ax-code/releases/download/desktop-v7.7.6/AX-Code-#{version}-mac-arm64.dmg"
+  url "https://github.com/defai-digital/ax-code/releases/download/desktop-v7.7.7/AX-Code-#{version}-mac-arm64.dmg"
   name "AX Code Desktop"
   desc "AI coding assistant desktop app powered by AX Code"
   homepage "https://github.com/defai-digital/ax-code"
