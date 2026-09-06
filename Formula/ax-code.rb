@@ -11,8 +11,8 @@
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
   homepage "https://github.com/defai-digital/ax-code"
-  url "https://github.com/defai-digital/ax-code/releases/download/v7.12.2/ax-code-darwin-arm64.zip"
-  sha256 "bbb33985f7898ad5e973c2ec38aa6dd7597db6274a30e4433c9fdabc82fab712"
+  url "https://github.com/defai-digital/ax-code/releases/download/v7.13.0/ax-code-darwin-arm64.zip"
+  sha256 "17369f64829e1b8113fbdbf6cc02d76c53eb2bfbce7ff85ba4a2de03173e9c3a"
   license "Apache-2.0"
 
   depends_on arch: :arm64
@@ -28,7 +28,7 @@ class AxCode < Formula
   # library by absolute path at runtime, so its install id is irrelevant. Gzip it
   # during install so the Mach-O linkage scan skips it, then restore it in
   # post_install, which runs after fix_dynamic_linkage.
-  AX_TUI_DYLIB = "node_modules/@ax-code/tui/vendor/darwin-arm64/libopentui.dylib"
+  AX_TUI_DYLIB = "node_modules/ax-tui/vendor/darwin-arm64/libopentui.dylib"
 
   def install
     libexec.install Dir["*"]
@@ -43,11 +43,11 @@ class AxCode < Formula
   end
 
   post_install_steps do
-    if_path_exists "node_modules/@ax-code/tui/vendor/darwin-arm64/libopentui.dylib.gz", base: :libexec do
-      set_permissions "node_modules/@ax-code/tui/vendor/darwin-arm64", "0755", base: :libexec, recursive: false
+    if_path_exists "node_modules/ax-tui/vendor/darwin-arm64/libopentui.dylib.gz", base: :libexec do
+      set_permissions "node_modules/ax-tui/vendor/darwin-arm64", "0755", base: :libexec, recursive: false
       run "/usr/bin/gunzip",
-          args:           ["--", "{{libexec}}/node_modules/@ax-code/tui/vendor/darwin-arm64/libopentui.dylib.gz"],
-          writable_paths: ["node_modules/@ax-code/tui/vendor/darwin-arm64"],
+          args:           ["--", "{{libexec}}/node_modules/ax-tui/vendor/darwin-arm64/libopentui.dylib.gz"],
+          writable_paths: ["node_modules/ax-tui/vendor/darwin-arm64"],
           writable_base:  :libexec
     end
   end
