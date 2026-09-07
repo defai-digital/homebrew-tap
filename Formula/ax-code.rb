@@ -11,8 +11,8 @@
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
   homepage "https://github.com/defai-digital/ax-code"
-  url "https://github.com/defai-digital/ax-code/releases/download/v7.13.1/ax-code-darwin-arm64.zip"
-  sha256 "5a91b8eb018e1a3e4de3aaaf973dec96535330e37eb9c4215ba9cab3db11f663"
+  url "https://github.com/defai-digital/ax-code/releases/download/v7.13.2/ax-code-darwin-arm64.zip"
+  sha256 "a3a09ccded064e4898f8e744d807e7f4cde70ff61d945a1d7f53136272e8a237"
   license "Apache-2.0"
 
   depends_on arch: :arm64
@@ -34,7 +34,21 @@ class AxCode < Formula
     libexec.install Dir["*"]
     (bin/"ax-code").write <<~SH
       #!/bin/sh
-      exec "#{formula_opt_bin("node")}/node" --experimental-ffi --disable-warning=ExperimentalWarning "#{libexec}/lib/index-node-tui.js" "$@"
+      NODE_BIN="#{formula_opt_bin("node")}/node"
+      CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/ax-code/libexec/runtime"
+      mkdir -p "$CACHE/bin" "$CACHE/lib"
+      ln -f "$NODE_BIN" "$CACHE/bin/AX-Code" 2>/dev/null || cp "$NODE_BIN" "$CACHE/bin/AX-Code" 2>/dev/null || true
+      NODE_LIB="$(CDPATH= cd -- "$(dirname "$NODE_BIN")/../lib" && pwd -P)" 2>/dev/null
+      if [ -d "$NODE_LIB" ]; then
+        for lib in "$NODE_LIB"/libnode*; do
+          [ -e "$lib" ] || continue
+          ln -sf "$lib" "$CACHE/lib/$(basename "$lib")" 2>/dev/null || true
+        done
+      fi
+      if [ -x "$CACHE/bin/AX-Code" ]; then
+        exec "$CACHE/bin/AX-Code" --experimental-ffi --disable-warning=ExperimentalWarning "#{libexec}/lib/index-node-tui.js" "$@"
+      fi
+      exec "$NODE_BIN" --experimental-ffi --disable-warning=ExperimentalWarning "#{libexec}/lib/index-node-tui.js" "$@"
     SH
     chmod 0755, bin/"ax-code"
 
