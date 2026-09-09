@@ -11,8 +11,8 @@
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
   homepage "https://github.com/defai-digital/ax-code"
-  url "https://github.com/defai-digital/ax-code/releases/download/v7.14.11/ax-code-darwin-arm64.zip"
-  sha256 "c17e6714a9eeb6ff138fab707dec76d41495b133737f726200c45217f028d246"
+  url "https://github.com/defai-digital/ax-code/releases/download/v7.15.0/ax-code-darwin-arm64.zip"
+  sha256 "0acea0fb101226d4765bfc0ba76f4d7db40b17f7d6d776a0a507f072396e4fc9"
   license "Apache-2.0"
 
   depends_on arch: :arm64
@@ -34,21 +34,10 @@ class AxCode < Formula
     libexec.install Dir["*"]
     (bin/"ax-code").write <<~SH
       #!/bin/sh
-      NODE_BIN="#{formula_opt_bin("node")}/node"
-      CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/ax-code/libexec/runtime"
-      mkdir -p "$CACHE/bin" "$CACHE/lib"
-      ln -f "$NODE_BIN" "$CACHE/bin/AX-Code" 2>/dev/null || cp "$NODE_BIN" "$CACHE/bin/AX-Code" 2>/dev/null || true
-      NODE_LIB="$(CDPATH= cd -- "$(dirname "$NODE_BIN")/../lib" && pwd -P)" 2>/dev/null
-      if [ -d "$NODE_LIB" ]; then
-        for lib in "$NODE_LIB"/libnode*; do
-          [ -e "$lib" ] || continue
-          ln -sf "$lib" "$CACHE/lib/$(basename "$lib")" 2>/dev/null || true
-        done
-      fi
-      if [ -x "$CACHE/bin/AX-Code" ]; then
-        exec "$CACHE/bin/AX-Code" --experimental-ffi --disable-warning=ExperimentalWarning "#{libexec}/lib/index-node-tui.js" "$@"
-      fi
-      exec "$NODE_BIN" --experimental-ffi --disable-warning=ExperimentalWarning "#{libexec}/lib/index-node-tui.js" "$@"
+      # Use the release launcher for atomic, runtime-specific Node branding.
+      export AX_CODE_SYSTEM_NODE=1
+      export PATH="#{formula_opt_bin("node")}:$PATH"
+      exec "#{libexec}/bin/ax-code" "$@"
     SH
     chmod 0755, bin/"ax-code"
 
