@@ -11,8 +11,8 @@
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
   homepage "https://github.com/defai-digital/ax-code"
-  url "https://github.com/defai-digital/ax-code/releases/download/v7.18.0/ax-code-darwin-arm64.zip"
-  sha256 "27e047404fca68e8f458ecbc29482c6ebea0d233cc39ec1ea5fd3f997980cb8f"
+  url "https://github.com/defai-digital/ax-code/releases/download/v7.18.1/ax-code-darwin-arm64.zip"
+  sha256 "e93595b84bb9a7c2420df17210cbb9e7b1079a07a49fdf89d253d91d6f923b69"
   license "Apache-2.0"
 
   depends_on arch: :arm64
