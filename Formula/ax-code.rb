@@ -10,7 +10,7 @@
 # AX Code TUI's node:ffi backend and suppresses Node's experimental FFI notice).
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
-  homepage "https://github.com/defai-digital/ax-code"
+  homepage "https://ax-code.app"
   version "7.24.4"
   url "https://download.ax-code.com/releases/download/v7.24.4/ax-code-darwin-arm64.zip"
   sha256 "496470ef3cb3071c8a998f11e42f8dd15c5236d2fe7fe14a019c9def49dee18c"
