@@ -42,11 +42,30 @@ class AxCode < Formula
     SH
     chmod 0755, bin/"ax-code"
 
+    # Homebrew rewrites dylib IDs and then ad-hoc signs the changed files.
+    # Hardened AX Engine executables cannot load those libraries with a
+    # different Team ID. Hide the entire signed sidecar until linkage fixing
+    # has finished, then restore its original bytes in post_install.
+    engine = libexec/"engine"
+    if engine.directory?
+      system "tar", "-czf", libexec/"ax-engine-signed.tar.gz", "-C", engine, "."
+      rm_rf engine
+      engine.mkpath
+    end
+
     dylib = libexec/AX_TUI_DYLIB
     system "gzip", "-n", "--", dylib if dylib.exist?
   end
 
   post_install_steps do
+    if_path_exists "ax-engine-signed.tar.gz", base: :libexec do
+      set_permissions "engine", "0755", base: :libexec, recursive: false
+      run "/usr/bin/tar",
+          args:           ["-xzf", "{{libexec}}/ax-engine-signed.tar.gz", "-C", "{{libexec}}/engine"],
+          writable_paths: ["engine"],
+          writable_base:  :libexec
+      remove "ax-engine-signed.tar.gz", base: :libexec
+    end
     if_path_exists "node_modules/ax-tui/vendor/darwin-arm64/libaxtui.dylib.gz", base: :libexec do
       set_permissions "node_modules/ax-tui/vendor/darwin-arm64", "0755", base: :libexec, recursive: false
       run "/usr/bin/gunzip",
