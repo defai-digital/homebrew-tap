@@ -11,10 +11,10 @@
 class AxCode < Formula
   desc "Sovereign AI coding agent — provider-agnostic, LSP-first"
   homepage "https://ax-code.app"
-  version "7.30.6"
+  version "7.30.7"
 
-  url "https://download.ax-code.com/releases/download/v7.30.6/ax-code-darwin-arm64.zip"
-  sha256 "810857a8c822460362504dade95f9337fb340a1a48536ccbb7d49cdfbba4136b"
+  url "https://download.ax-code.com/releases/download/v7.30.7/ax-code-darwin-arm64.zip"
+  sha256 "a02b63a487f86441057508f264d6f94941ab9a1323181cc2519f05cda03c7115"
   license "Apache-2.0"
 
   depends_on arch: :arm64
